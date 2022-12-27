@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 
 export default function Tooltip({ children, content, position }) {
 	const [opacity, setOpacity] = useState('opacity-0')

@@ -1,19 +1,6 @@
 import React, { useEffect, useState, createContext } from 'react'
+import { deleteDoc, collection, setDoc, doc, getDoc, addDoc, query, where, getDocs } from 'firebase/firestore'
 import {
-	getFirestore,
-	deleteDoc,
-	collection,
-	setDoc,
-	doc,
-	getDoc,
-	addDoc,
-	query,
-	where,
-	getDocs,
-	updateDoc,
-} from 'firebase/firestore'
-import {
-	getAuth,
 	createUserWithEmailAndPassword,
 	signInWithEmailAndPassword,
 	signOut,

@@ -1,8 +1,7 @@
 import '../index.css'
-import React, { useReducer, useState, useContext, useEffect } from 'react'
+import React from 'react'
 import ReactDOM from 'react-dom/client'
-import ReactDom from 'react-dom'
-import { HashRouter } from 'react-router-dom'
+import { BrowserRouter } from 'react-router-dom'
 import App from './App'
 import { AuthProvider } from './utils/Auth'
 import { ToastProvider } from './utils/Toast'
@@ -24,9 +23,9 @@ const Providers = ({ children }) => {
 }
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-	<Providers>
-		<HashRouter>
+	<BrowserRouter basename="banter">
+		<Providers>
 			<Main />
-		</HashRouter>
-	</Providers>
+		</Providers>
+	</BrowserRouter>
 )
