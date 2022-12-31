@@ -1,11 +1,10 @@
 import React from 'react'
 import ChatListItem from './ChatListItem'
-import { Link } from 'react-router-dom'
 
-export default function ChatList({ chats, user, updateChats }) {
+export default function ChatList({ chats, updateChats }) {
 	return (
-		<ul className="w-full px-8 max-w-xl">
-			{chats && chats.map((chat) => <ChatListItem key={chat.id} chat={chat} user={user} updateChats={updateChats} />)}
+		<ul className="w-[30em] px-8 max-w-full">
+			{chats && chats.map((chat) => <ChatListItem key={chat.id} chat={chat} updateChats={updateChats} />)}
 		</ul>
 	)
 }

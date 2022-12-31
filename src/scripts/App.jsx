@@ -16,8 +16,6 @@ function App() {
 		<div className="App">
 			<Routes>
 				<Route exact path="/" element={<PrivateRoute element={<Dashboard />} />} />
-				<Route path="/profile/:id" element={<PrivateRoute element={<Profile />} />} />
-				<Route path="/my-profile" element={<PrivateRoute element={<MyProfile />} />} />
 				<Route path="/chat/:id" element={<PrivateRoute element={<Chatroom />} />} />
 				<Route path="/login" element={loading ? <p>Loading...</p> : user ? <Navigate to="/" /> : <Login />} />
 				<Route path="/signup" element={<Signup />} />

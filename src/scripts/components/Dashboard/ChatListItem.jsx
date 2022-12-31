@@ -1,7 +1,9 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { doc, deleteDoc } from 'firebase/firestore'
 import { db } from '../../utils/firebase'
 import { useNavigate } from 'react-router-dom'
+import { AuthContext } from '../../utils/Auth'
+import DefaultImage from '../DefaultImage'
 
 function timeSince(date) {
 	if (!date) return null
@@ -35,15 +37,19 @@ function getUsersTitle(users, uid) {
 	return array[0] + ' and ' + array[1]
 }
 
-export default function ChatListItem({ chat, user, updateChats }) {
+export default function ChatListItem({ chat, updateChats }) {
+	const { user } = useContext(AuthContext)
 	const navigate = useNavigate()
 	const [lastMessage, setLastMessage] = useState(chat.lastMessage)
 	const [timestamp, setTimestamp] = useState(timeSince(chat.lastMessage?.timestamp))
 	let content, sender
 	if (chat.lastMessage) {
 		sender = chat.lastMessage.sender.id === user.uid ? 'You' : chat.lastMessage.sender.displayName
-		content = chat.lastMessage.content
-		if (content.length > 25) content = content.slice(0, 25) + '...'
+		if (chat.lastMessage.type === 'image') content = 'Image'
+		else {
+			content = chat.lastMessage.content
+			if (content.length > 25) content = content.slice(0, 25) + '...'
+		}
 	} else {
 		content = 'No messages yet. Tap to start a conversation!'
 	}
@@ -55,20 +61,21 @@ export default function ChatListItem({ chat, user, updateChats }) {
 	function handleLink() {
 		navigate(`/chat/${chat.id}`)
 	}
+
 	return (
 		<li
 			onClick={handleLink}
-			className="relative flex flex-col justify-between h-24 bg-primary-200 border-2 rounded-md p-2 cursor-pointer hover:brightness-125 transition-all duration-200"
+			className="relative flex justify-between shadow-[inset_0_-1px_3px_0_#ffffff30] bg-secondary rounded-md p-2 cursor-pointer hover:brightness-125 transition-all duration-200"
 		>
-			<h2 className="font-bold">{chatTitle}</h2>
-			<span onClick={handleTrash} className="absolute top-2 right-2">
-				Trash
-			</span>
-			<div className="flex relative">
+			{(chat.image && <img src={chat.image} alt="Chat image" className="w-12 h-12 rounded-full mr-2" />) || (
+				<DefaultImage />
+			)}
+			<div className="flex flex-col mb-4">
+				<h2 className="font-bold">{chatTitle}</h2>
 				<h3 className="font-bold opacity-70 pr-1">{sender ? sender + ':' : ''}</h3>
-				<p className="opacity-70">{content}</p>
+				<span className="opacity-70">{content}</span>
 			</div>
-			<span className="self-end text-xs opacity-70">{timestamp}</span>
+			<span className="absolute bottom-1 right-1 text-xs opacity-70">{timestamp}</span>
 		</li>
 	)
 }

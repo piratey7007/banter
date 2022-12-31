@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 
 export default function Tooltip({ children, content, position }) {
+	if (!content) content = 'Loading...'
 	const [opacity, setOpacity] = useState('opacity-0')
 	if (!children) throw new Error('Wrap the element you want to add a tooltip to with the Tooltip component.')
 	let pos

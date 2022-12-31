@@ -4,64 +4,50 @@ import { collection, getDocs, doc, query, where, limit } from 'firebase/firestor
 import { db } from '../utils/firebase'
 import Header from '../components/Dashboard/Header'
 import ChatList from '../components/Dashboard/ChatList'
-import NewChat from '../components/Dashboard/NewChat'
 
 const Dashboard = () => {
-	const { signOut, getUserDetails, user } = useContext(AuthContext)
-	const [chats, setChats] = useState()
-	const [userInfo, setUserInfo] = React.useState()
-	const [loading, setLoading] = useState({ chats: true, userInfo: true })
+	const { user } = useContext(AuthContext)
 
-	async function updateChats() {
-		setLoading({ ...loading, chats: true })
+	const [chats, setChats] = useState(null)
+	const [chatsLoaded, setChatsLoaded] = useState(false)
+	const [card, setCard] = useState(null)
+
+	async function updateChats(additionalQuery = false) {
+		if (additionalQuery) additionalQuery = chats.length + 10
+		setChatsLoaded(false)
 		const q = query(
 			collection(db, 'conversations'),
 			where('users', 'array-contains', { displayName: user.displayName, id: user.uid }),
-			limit(25)
+			limit(additionalQuery || 10)
 		)
 		const querySnapshot = await getDocs(q)
 		const conversations = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
 		setChats(conversations)
-		setLoading({ ...loading, chats: false })
+		setChatsLoaded(true)
 	}
 
 	useEffect(() => {
-		// IIFE to get and set user details
-		;(async () => {
-			setLoading((loading) => ({ chats: loading.chats, userInfo: true }))
-			const details = await getUserDetails()
-			setUserInfo({
-				displayName: user.displayName,
-				email: user.email,
-				photoURL: user.photoURL,
-				...details,
-			})
-			setLoading((loading) => ({ chats: loading.chats, userInfo: false }))
-		})()
-
-		// IIFE to get and set user chats
-		;(async () => {
-			setLoading((loading) => ({ userInfo: loading.userInfo, chats: true }))
-			const userRef = doc(db, 'users', user.uid)
-			const q = query(
-				collection(db, 'conversations'),
-				where('users', 'array-contains', { displayName: user.displayName, id: user.uid }),
-				limit(25)
-			)
-			const querySnapshot = await getDocs(q)
-			const conversations = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
-			setChats(conversations)
-			setLoading((loading) => ({ userInfo: loading.userInfo, chats: false }))
-		})()
+		updateChats()
 	}, [])
+
+	const pushCard = (card) => setCard(card)
+
+	const LowerCard = ({ children }) => {
+		return (
+			<div className="w-fit h-fit flex flex-col items-center">
+				{children}
+				<div className="w-full h-full">{card}</div>
+			</div>
+		)
+	}
 
 	return (
 		<div className="w-full h-full flex flex-col items-center">
-			{!loading.userInfo && <Header userInfo={userInfo} />}
-			{loading.userInfo && <Header />}
-			{!loading.chats && <ChatList chats={chats} user={user} updateChats={updateChats} />}
-			{loading.chats && <ChatList />}
-			<NewChat updateChats={updateChats} />
+			<Header pushCard={pushCard} />
+			<LowerCard>
+				{chatsLoaded && <ChatList chats={chats} updateChats={() => updateChats(true)} />}
+				{!chatsLoaded && <ChatList />}
+			</LowerCard>
 		</div>
 	)
 }

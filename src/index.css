@@ -1,50 +1,25 @@
-@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Vidaloka&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
-	/* 				primary: {
-					100: '#1b2131',
-					200: '#1c2432',
-					300: '#1e2b36',
-					700: '#366170',
-					800: '#3c7d8b',
-					900: '#45979d',
-				},
-				accent: {
-					100: '#efefef',
-				},
-				error: {
-					100: '#ff0000',
-					500: '#ffcccc',
-				},
-				success: {
-					100: '#00ff00',
-					500: '#ccffcc',
-				}, */
 	:root {
-		--p100: #1b2131;
-		--p200: #1c2432;
-		--p300: #1e2b36;
-		--p700: #366170;
-		--p800: #3c7d8b;
-		--p900: #45979d;
-		--a0: #11131a;
-		--a100: #efefef;
-		--e100: #ff0000;
-		--e500: #ffcccc;
-		--s100: #00ff00;
-		--s500: #ccffcc;
+		--primary: #212f45;
+		--primary-light: #2f4268;
+		--primary-dark: #162028;
+		--secondary: #234b54;
+		--black: #0f1215;
+		--white: #f0f0f0;
 	}
 }
 
 html {
 	height: 100vh;
 	width: 100%;
-	background-color: var(--a0);
-	color: #efefef;
+	background-color: var(--black);
+	color: var(--white);
 	font-family: 'Lato', sans-serif;
 }
 
