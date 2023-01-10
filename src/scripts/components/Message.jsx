@@ -6,7 +6,7 @@ import useTimestamp from '../utils/useTimestamp'
 import UserImage from './UserImage'
 
 export default function Message({ message, type, ...props }) {
-	const [timestamp, getTimestamp] = useTimestamp(message.timestamp)
+	// const [timestamp, getTimestamp] = useTimestamp(message.timestamp)
 	const { user } = useContext(AuthContext)
 	const classes = (message.uid == user.uid ? 'my-message' : 'their-message') + (type == 'reply' ? ' reply' : '')
 
@@ -14,7 +14,7 @@ export default function Message({ message, type, ...props }) {
 		await deleteDoc(doc(db, 'conversations', message.conversation, 'messages', message.id))
 	}
 
-	useEffect(getTimestamp, [])
+	// useEffect(getTimestamp, [])
 
 	const { sender, senderPhoto, getSenderPhoto, content, reply } = message
 
@@ -23,7 +23,7 @@ export default function Message({ message, type, ...props }) {
 			{reply && <Message reply={reply} type='reply' />}
 			<div
 				onMouseOver={() => {
-					getTimestamp()
+					// getTimestamp()
 				}}
 				className={classes + ' relative'}
 				{...props}
@@ -33,7 +33,7 @@ export default function Message({ message, type, ...props }) {
 				</div>
 				<div className='message-content'>
 					<p>{content}</p>
-					<span>{timestamp}</span>
+					{/* <span>{timestamp}</span> */}
 				</div>
 				<button onClick={handleDeleteMessage} className='top-0 right-0 absolute'>
 					Delete Message

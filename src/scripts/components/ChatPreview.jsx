@@ -8,7 +8,7 @@ import UserImage from './UserImage'
 export default function ChatPreview({ chat }) {
 	const { lastMessage } = chat
 	const { user } = useContext(AuthContext)
-	const [timestamp, getTimestamp] = useTimestamp(lastMessage.timestamp)
+	// const [timestamp, getTimestamp] = useTimestamp(lastMessage.timestamp)
 	const [sender, setSender] = useState()
 	const [chatName, setChatName] = useState()
 	if (!lastMessage.senderId) setSender('New Chat')
@@ -17,26 +17,47 @@ export default function ChatPreview({ chat }) {
 
 	useEffect(() => {
 		if (!chat.name) {
-			;(async () => {
-				const usernames = []
-				for (let i = 0; i < chat.users.length && i < 4; i++)
-					if (chat.users[i] != user.uid) {
-						const addUser = await (await getDoc(doc(db, 'users', chat.users[i]))).data().displayName
-						if (getString(addUser).length < 40) usernames.push(addUser)
-						else break
-					}
-				const popped = usernames.pop()
-				setChatName(getString(popped))
+			;(async function getChatName() {
+				const chatUsers = chat.users.filter((uid) => uid != user.uid)
+				const checkedUsernames = []
 
-				// Helper function to get the string
-				function getString(addUser) {
-					const diff = chat.users.length - usernames.length - 1
-					if (diff == 0) return [...usernames, 'and ' + addUser].join(', ')
-					if (diff == 1) return [...usernames, addUser, 'and 1 other...'].join(', ')
-					if (diff > 1) return [...usernames, addUser, `and ${diff} others...`].join(', ')
+				// If there's only one user, use their display name
+				if (chatUsers.length == 1) return setChatName(await getDisplayName(0))
+
+				// Takes an array of usernames and returns the string that would be displayed
+				function getChatString(usernames) {
+					const usersRemaining = chatUsers.length - checkedUsernames.length - 1
+					const lastUser = usernames.pop()
+					switch (usersRemaining) {
+						case 0:
+							return usernames.length > 1 ? usernames.join(', ') + 'and ' + lastUser : usernames + ' and ' + lastUser
+						case 1:
+							return [...usernames, lastUser, 'and 1 other...'].join(', ')
+						default:
+							return [...usernames, lastUser, `and ${usersRemaining} others...`].join(', ')
+					}
+				}
+
+				// Add users to the chat name until it's too long
+				for (let i = 0; i < chatUsers.length && i < 4; i++) {
+					if (chat.users[i] != user.uid) {
+						const { displayName } = await getDisplayName(i)
+						if (getChatString([...checkedUsernames, displayName]).length < 40) {
+							checkedUsernames.push(displayName)
+						} else break
+					}
+				}
+
+				setChatName(getChatString(checkedUsernames))
+
+				// Gets the display name of a user
+				async function getDisplayName(n) {
+					return (await getDoc(doc(db, 'users', chatUsers[n]))).data().displayName
 				}
 			})()
-		} else setChatName(chat.name.length > 40 ? chat.name.slice(0, 40) + '...' : chat.name)
+		} else {
+			setChatName(chat.name.length > 40 ? chat.name.slice(0, 40) + '...' : chat.name)
+		}
 	}, [])
 
 	return (
@@ -58,7 +79,7 @@ export default function ChatPreview({ chat }) {
 								</p>
 							)}
 						</div>
-						<span className='absolute right-0 bottom-0 text-xs opacity-50'>{timestamp}</span>
+						{/* <span className='absolute right-0 bottom-0 text-xs opacity-50'>{timestamp}</span> */}
 					</>
 				)) || <p>Tap to start the conversation!</p>}
 			</div>
