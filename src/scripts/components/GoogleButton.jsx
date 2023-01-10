@@ -1,25 +1,10 @@
-import React, { useContext } from 'react'
-import { AuthContext } from '../utils/Auth'
-
-const GoogleButton = ({ text }) => {
-	const { googleSignIn, setPending } = useContext(AuthContext)
-
-	const handleGoogleSignIn = async (e) => {
-		e.preventDefault()
-		setPending('Signing in with Google...')
-		await googleSignIn()
-	}
+export default function GoogleButton(props) {
 	return (
-		<button
-			className="flex gap-2 bg-blue-500 hover:bg-blue-700 py-2 px-2 rounded-lg transition-colors duration-200"
-			onClick={handleGoogleSignIn}
-		>
-			<svg className="h-full w-14 aspect-square">
-				<use href="#google-icon" />
-			</svg>
-			<span className="font-bold whitespace-nowrap flex justify-center items-center">{text}</span>
+		<button {...props} className={props.className + ' bg-blue-600 px-3 py-2'}>
+			{props.children}
+			<div className='bg-white rounded-lg p-1'>
+				<img className='w-7' src='https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg' />
+			</div>
 		</button>
 	)
 }
-
-export default GoogleButton

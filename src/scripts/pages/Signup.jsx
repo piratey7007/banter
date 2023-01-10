@@ -1,102 +1,95 @@
-import React, { useRef, useState, useContext, useEffect } from 'react'
-import { AuthContext } from '../utils/Auth'
-import { Link } from 'react-router-dom'
+import { collection, query, where } from '@firebase/firestore'
+import { useContext, useRef, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import Card from '../components/Card'
-import StatusAlert from '../components/StatusAlert'
+import Form from '../components/Form'
 import GoogleButton from '../components/GoogleButton'
-import DefaultImage from '../components/DefaultImage'
+import StatusAlert from '../components/StatusAlert'
+import { AuthContext } from '../utils/Auth'
+import { db } from '../utils/firebaseInfo'
 
-const Signup = () => {
-	const email = useRef('')
-	const username = useRef('')
-	const password = useRef('')
-	const confirmPassword = useRef('')
-	const age = useRef('')
-	const bio = useRef('')
-	const birthday = useRef('')
-	const avatar = useRef('')
-	const [card, setCard] = useState('signup')
-	const { signup, status } = useContext(AuthContext)
-	const [error, setError] = useState(null)
+export default function Signup() {
+	const navigate = useNavigate()
+	const { googleSignUp, signup } = useContext(AuthContext)
+	const emailRef = useRef()
+	const usernameRef = useRef()
+	const passwordRef = useRef()
+	const confirmPasswordRef = useRef()
+	const [status, setStatus] = useState({})
 
-	const handleSignup = async (e) => {
-		e.preventDefault()
+	function verifyInformation() {
+		const email = emailRef.current.value,
+			username = usernameRef.current.value,
+			password = passwordRef.current.value,
+			confirmPassword = confirmPasswordRef.current.value
+
+		setStatus({ pending: 'Verifying information...' })
+		if (!email) return setStatus({ error: 'Please enter an email' })
+		if (!username) return setStatus({ error: 'Please enter a username' })
+		if (!password) return setStatus({ error: 'Please enter a password' })
+		if (password !== confirmPassword) return setStatus({ error: 'Passwords do not match' })
 		if (
-			username.current.value.trim() === '' ||
-			password.current.value.trim() === '' ||
-			confirmPassword.current.value.trim() === '' ||
-			email.current.value.trim() === ''
+			email.indexOf('@') === -1 ||
+			email.indexOf('.') === -1 ||
+			email.length < 5 ||
+			email.indexOf('@') > email.indexOf('.')
 		)
-			return setError('Please fill in all fields')
-		if (username.current.value.length < 3) return setError('Username must be at least 3 characters')
-		if (password.current.value.length < 8) return setError('Password must be at least 8 characters')
-		if (
-			!email.current.value.includes('@') ||
-			!email.current.value.includes('.') ||
-			email.current.value.indexOf('@') > email.current.value.indexOf('.')
-		)
-			return setError('Please enter a valid email address')
-		if (password.current.value !== confirmPassword.current.value) return setError('Passwords do not match')
-		await signup()
+			return setStatus({ error: 'Please enter a valid email' })
+		if (username.length < 3 || username.length > 20)
+			return setStatus({ error: 'Username must be between 3 and 20 characters' })
+		if (password.length < 6 || password.length > 30)
+			return setStatus({ error: 'Password must be between 6 and 30 characters' })
+		if (password.indexOf(' ') !== -1) return setStatus({ error: 'Password cannot contain spaces' })
+		if (password.match(/[A-Z]/g) === null)
+			return setStatus({ error: 'Password must contain at least one uppercase letter' })
+		if (password.match(/[a-z]/g) === null)
+			return setStatus({ error: 'Password must contain at least one lowercase letter' })
+		if (password.match(/[0-9]/g) === null) return setStatus({ error: 'Password must contain at least one number' })
+		if (password.match(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/g) === null)
+			return setStatus({ error: 'Password must contain at least one special character' })
+		return setStatus({ pending: 'Creating account...' })
 	}
 
-	const handleInfo = async (e) => {
-		e.preventDefault()
+	async function handleSignup(e) {
+		e?.preventDefault()
+		verifyInformation()
+		if (status?.error) return
+		const user = {
+			email: emailRef.current.value,
+			username: usernameRef.current.value,
+		}
+		const docs = getDocs(query(collection(db, 'users'), where('email', '==', user.email)))
+		if (docs.length > 0) return setStatus({ error: 'An account with this email already exists' })
+		await signup(user.email, user.password)
+		await addDoc(collection(db, 'users'), user)
+		setStatus({ success: 'Account created successfully' })
 	}
 
-	const signupCard = (
-		<Card className="signup">
-			<h1>Sign Up</h1>
-			{(error || status?.error || status?.pending || status?.success) && (
-				<StatusAlert status={error ? { error } : status} />
-			)}
-			<form onSubmit={handleSignup} action="signup">
-				<input type="email" name="email" ref={email} placeholder="Email" />
-				<input type="text" name="username" ref={username} placeholder="Username" />
-				<input type="password" name="password" ref={password} placeholder="Password" />
-				<input type="password" name="confirm-password" ref={confirmPassword} placeholder="Confirm Password" />
-				<button type="submit" value="Sign up">
-					Login
-				</button>
-			</form>
-			<Link to="/signup">Already have an account?</Link>
-			<GoogleButton text="Sign up with Google" />
+	async function handleGoogle() {
+		const g = await googleSignUp()
+		const user = {
+			email: g.user.email,
+			username: g.user.displayName,
+		}
+		await addDoc(collection(db, 'users'), user)
+		navigate('/')
+	}
+
+	return (
+		<Card>
+			<h1>Sign up</h1>
+			{(status?.error || status?.success || status?.pending) && <StatusAlert status={status} />}
+			<Form onSubmit={handleSignup} action='signup'>
+				<input type='email' ref={emailRef} placeholder='Email' />
+				<input type='text' ref={usernameRef} placeholder='Username' />
+				<input type='password' ref={passwordRef} placeholder='Password' />
+				<input type='password' ref={confirmPasswordRef} placeholder='Confirm Password' />
+			</Form>
+			<Link to='/login'>Already have an account?</Link>
+			<button onClick={handleSignup} type='submit'>
+				Sign up
+			</button>
+			<GoogleButton>Sign up with Google</GoogleButton>
 		</Card>
 	)
-
-	const infoCard = (
-		<Card className="info">
-			<h1>Info</h1>
-			<form onSubmit={handleInfo} action="info">
-				<div className="avatar">
-					{<DefaultImage />}
-					<input type="file" name="avatar" ref={avatar} placeholder="Avatar" />
-					<select name="Default Color" id="default-color">
-						<option value="maroon">Maroon</option>
-						<option value="aqua">Aqua</option>
-						<option value="forestgreen">Forest Green</option>
-						<option value="fuchsia">Fuchsia</option>
-						<option value="teal">Teal</option>
-					</select>
-				</div>
-				<div>
-					<input type="range" name="age" ref={age} placeholder="Age" />
-					<span>
-						<svg className="-rotate-90">
-							<use href="#arrow" />
-						</svg>
-					</span>
-				</div>
-				<input type="date" name="birthday" ref={birthday} placeholder="Birthday" />
-				<input type="text" name="bio" ref={bio} placeholder="Bio" />
-				<button type="submit" value="Sign up">
-					Submit
-				</button>
-			</form>
-		</Card>
-	)
-
-	return <>{card === 'signup' ? signupCard : card === 'info' ? infoCard : <></>}</>
 }
-
-export default Signup

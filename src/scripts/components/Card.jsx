@@ -1,40 +1,33 @@
-import React from 'react'
-
-const Card = ({ children }) => {
-	const newChildren = React.Children.map(children, recursiveClone)
-	function recursiveClone(child) {
-		if (React.isValidElement(child)) {
-			let classNames = ''
-			switch (child.type) {
-				case 'h1':
-					classNames = 'text-2xl font-medium text-3xl mb-5'
-					break
-				case 'button':
-					classNames = 'bg-primary-200 rounded-md px-4 py-2 hover:bg-primary-300 transition-colors duration-300'
-					break
-				case 'input':
-					classNames =
-						'bg-transparent border-[.5px] border-white p-2 rounded-md w-full focus:outline-none focus:border-primary-300 focus:shadow-inner focus:shadow-black transition-colors duration-200'
-					break
-				case 'form':
-					classNames = 'flex flex-col gap-5 w-full justify-center items-center mb-5'
-					break
-				default:
-					break
+import { Children, cloneElement } from 'react'
+import Form from './Form'
+export default function Card({ children }) {
+	function iterate(children) {
+		return Children.map(children, (child) => {
+			if (child) {
+				if (child.type?.name == 'Form') return cloneElement(child, { className: 'w-full' })
+				if (child.type === 'h1') return cloneElement(child, { className: 'text-4xl font-[Rye] mb-4' })
+				if (child.type === 'button' || child.type?.name == 'GoogleButton') {
+					return cloneElement(child, {
+						className:
+							'px-5 py-3 bg-primary-light rounded-2xl flex gap-2 justify-center items-center hover:brightness-[115%] transition-all duration-200',
+					})
+				}
+				if (child.type?.displayName === 'Link')
+					return cloneElement(child, {
+						className:
+							'self-start pl-2 -mt-2 font-light text-[#42A4FF] no-underline hover:underline hover:brightness-[120%] transition-all duration-200',
+					})
+				return child
 			}
-			const subChildren = React.Children.map(child.props.children, recursiveClone)
-			return React.cloneElement(child, {
-				className: child.props.className ? classNames + ' ' + child.props.className : classNames,
-				children: subChildren,
-			})
-		}
-		return child
+			return null
+		})
 	}
+	const newChildren = iterate(children)
 	return (
-		<div className="flex flex-col gap-5 w-[30em] max-w-[90%] border-[.5px] shadow-[#efefef6d] shadow-md p-8 rounded-2xl justify-center items-center">
-			{newChildren}
+		<div className='absolute top-0 bottom-0 right-0 left-0 m-auto flex flex-col justify-center items-center'>
+			<div className='relative w-[35em] max-w-[95%] py-16 px-12 rounded-3xl gap-6 flex flex-col justify-center items-center bg-primary'>
+				{newChildren}
+			</div>
 		</div>
 	)
 }
-
-export default Card

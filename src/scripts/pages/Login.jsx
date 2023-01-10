@@ -1,39 +1,53 @@
-import React, { useRef, useContext } from 'react'
-import { Link } from 'react-router-dom'
-import { AuthContext } from '../utils/Auth'
+import { collection, getDocs, query, where } from '@firebase/firestore'
+import { useContext, useEffect, useRef, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import Card from '../components/Card'
-import StatusAlert from '../components/StatusAlert'
+import Form from '../components/Form'
 import GoogleButton from '../components/GoogleButton'
+import StatusAlert from '../components/StatusAlert'
+import { AuthContext } from '../utils/Auth'
+import { db } from '../utils/firebaseInfo'
 
-const Login = () => {
-	const username = useRef('')
-	const password = useRef('')
-	const confirmPassword = useRef('')
-	const email = useRef('')
-	const { signIn, loading: userLoading, status, setError } = useContext(AuthContext)
+export default function Signup() {
+	const { status: authStatus, signIn } = useContext(AuthContext)
+	const { googleSignIn } = useContext(AuthContext)
+	const navigate = useNavigate()
+	useEffect(() => {
+		setStatus(authStatus)
+	}, [authStatus])
+	const emailRef = useRef()
+	const passwordRef = useRef()
+	const [status, setStatus] = useState({})
 
-	const handleLogin = async (e) => {
-		e.preventDefault()
-		if (username.current.value.trim() === '' || password.current.value.trim() === '')
-			return setError('Please fill in all fields')
-		await signIn(username.current.value, password.current.value)
+	async function handleLogin(e) {
+		e?.preventDefault()
+		const email = emailRef.current.value,
+			password = passwordRef.current.value
+		if (!email) return setStatus({ error: 'Please enter an email' })
+		if (!password) return setStatus({ error: 'Please enter a password' })
+		const querySnapshot = await getDocs(query(collection(db, 'users'), where('email', '==', email)))
+		if (querySnapshot.size < 1) return setStatus({ error: 'Email not found' })
+		await signIn(email, password)
+	}
+
+	async function handleGoogle() {
+		await googleSignIn()
+		navigate('/')
 	}
 
 	return (
-		<Card className="login">
+		<Card>
 			<h1>Login</h1>
-			{status && <StatusAlert status={status} />}
-			<form onSubmit={handleLogin} action="login">
-				<input type="text" name="username" ref={username} placeholder="Username/Email" />
-				<input type="password" name="password" ref={password} placeholder="Password" />
-				<Link to="/signup">Need an account?</Link>
-				<button type="submit" value="Login">
-					Login
-				</button>
-			</form>
-			<GoogleButton text="Login with Google" />
+			{(status?.error || status?.success || status?.pending) && <StatusAlert status={status} />}
+			<Form onSubmit={handleLogin} action='login'>
+				<input type='text' ref={emailRef} placeholder='Email/Username' />
+				<input type='password' ref={passwordRef} placeholder='Password' />
+			</Form>
+			<Link to='/signup'>Need an account?</Link>
+			<button onClick={handleLogin} type='submit'>
+				Login
+			</button>
+			<GoogleButton onClick={handleGoogle}>Login with Google</GoogleButton>
 		</Card>
 	)
 }
-
-export default Login

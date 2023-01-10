@@ -12,4 +12,16 @@ export default defineConfig({
 		},
 	},
 	base: '/banter',
+	optimizeDeps: {
+		exclude: [
+			'firebase',
+			'@firebase/app',
+			'@firebase/auth',
+			'@firebase/firestore',
+			'@firebase/analytics',
+			'firebase/app',
+			'firebase/auth',
+			'firebase/firestore',
+		],
+	},
 })

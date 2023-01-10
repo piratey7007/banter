@@ -1,5 +1,5 @@
 import React, { useEffect, useState, createContext } from 'react'
-import { deleteDoc, collection, setDoc, doc, getDoc, addDoc, query, where, getDocs } from 'firebase/firestore'
+import { deleteDoc, collection, setDoc, doc, getDoc, addDoc, query, where, getDocs } from '@firebase/firestore'
 import {
 	createUserWithEmailAndPassword,
 	signInWithEmailAndPassword,
@@ -13,7 +13,7 @@ import {
 	GoogleAuthProvider,
 	deleteUser,
 } from 'firebase/auth'
-import { auth, db } from './firebase'
+import { auth, db } from './firebaseInfo'
 import { useNavigate } from 'react-router-dom'
 
 const users = collection(db, 'users')
@@ -23,17 +23,18 @@ export const AuthProvider = ({ children }) => {
 	const [user, setUser] = useState(null)
 	const [authUser, setAuthUser] = useState(null)
 	const [details, setDetails] = useState(null)
+	const [userIsLoaded, setUserIsLoaded] = useState(false)
 	const setUserNull = () => {
 		setUser(null)
 		setAuthUser(null)
 		setDetails(null)
+		setUserIsLoaded(true)
 	}
-	const [userIsLoaded, setUserIsLoaded] = useState(false)
 
 	const [status, setStatus] = useState(null)
-	const setError = (error) => setStatus({ error, success: null, pending: null })
-	const setSuccess = (success) => setStatus({ error: null, success, pending: null })
-	const setPending = (pending) => setStatus({ error: null, success: null, pending })
+	const setError = (error) => setStatus({ error })
+	const setSuccess = (success) => setStatus({ success })
+	const setPending = (pending) => setStatus({ pending })
 
 	const navigate = useNavigate()
 
@@ -52,12 +53,12 @@ export const AuthProvider = ({ children }) => {
 								setDoc(doc(users, currentUser.uid), {
 									email: currentUser.email,
 									uid: currentUser.uid,
-								})
+								}),
 							)
 						}
-					} catch (err) {
+					} catch (error) {
 						setUserNull()
-						setError(err)
+						setStatus({ error })
 						if (!pathname.includes('login') && !pathname.includes('signup')) navigate('/login')
 					}
 				})()
@@ -107,7 +108,7 @@ export const AuthProvider = ({ children }) => {
 					const querySnapshot = await getDocs(q)
 					if (querySnapshot.size > 0) {
 						setError(
-							'Uh oh! It looks like you have an account with us, but it is not linked to this email. Please sign in with your email and password, then link this email in the user settings.'
+							'Uh oh! It looks like you have an account with us, but it is not linked to this email. Please sign in with your Google account, then link it to this email in the user settings.',
 						)
 					}
 				} catch (err) {
@@ -162,7 +163,7 @@ export const AuthProvider = ({ children }) => {
 				const { user } = await signInWithPopup(
 					auth,
 					new GoogleAuthProvider(),
-					email && password ? { email, password } : undefined
+					email && password ? { email, password } : undefined,
 				)
 				const docRef = doc(db, 'users', user.uid)
 				const userDoc = await getDoc(docRef)
@@ -180,7 +181,7 @@ export const AuthProvider = ({ children }) => {
 				const { user } = await signInWithPopup(
 					auth,
 					new GoogleAuthProvider(),
-					email && password ? { email, password } : undefined
+					email && password ? { email, password } : undefined,
 				)
 				const docRef = doc(db, 'users', user.uid)
 				const userDoc = await getDoc(docRef)
@@ -192,7 +193,7 @@ export const AuthProvider = ({ children }) => {
 				const querySnapshot = await getDocs(q)
 				if (querySnapshot.size > 0) {
 					setError(
-						'Uh oh! It looks like you have an account with us, but it is not linked to your Google account. Please sign in with your email and password, then link your Google account in your profile settings.'
+						'Uh oh! It looks like you have an account with us, but it is not linked to your Google account. Please sign in with your email and password, then link your Google account in your profile settings.',
 					)
 				}
 				setError(err.message || 'There was a problem signing in with Google. Try another method.')

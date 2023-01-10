@@ -1,64 +1,71 @@
-import React from 'react'
-import { collection, orderBy, onSnapshot, serverTimestamp } from 'firebase/firestore'
-import { useState, useEffect } from 'react'
-import { db } from '../utils/firebase'
-import { useParams } from 'react-router-dom'
+import React, { useContext, useEffect, useRef, useState } from 'react'
+import { useParams } from 'react-router'
+import { AuthContext } from '../utils/Auth'
+import useMessages from '../utils/useMessages'
+import Message from '../components/Message'
+import { doc, getDoc } from '@firebase/firestore'
+import { db } from '../utils/firebaseInfo'
+import ChatroomInput from '../components/ChatroomInput'
 
-function Chatroom({ user }) {
-	const { conversationId } = useParams()
-	const [messages, setMessages] = useState([])
-	const [message, setMessage] = useState('')
-	const [loading, setLoading] = useState(true)
-
+export default function Chatroom({ className, ...props }) {
+	const { id } = useParams()
+	const chatroomRef = useRef()
+	const { user } = useContext(AuthContext)
+	const [messages, getMessages, addMessage] = useMessages(id)
+	const myClasses = ``
+	const theirClasses = ``
 	useEffect(() => {
-		let unsubscribe
-		if (conversationId) {
-			unsubscribe = onSnapshot(
-				collection(db, 'conversations', conversationId, 'messages'),
-				orderBy('timestamp', 'asc'),
-				{ limit: 25 },
-				(snapshot) => {
-					setMessages(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })))
-					setLoading(false)
-				}
-			)
-		}
+		;(async () => {
+			await getMessages()
+			setTimeout(() => {
+				chatroomRef.current.scrollTo(0, chatroomRef.current.scrollHeight)
+			}, 2000)
+		})()
+	}, [])
 
-		return () => unsubscribe && unsubscribe()
-	}, [conversationId])
+	const images = new Map([[user.uid, { photoURL: user.photoURL, defaultColors: user.defaultColors }]])
 
-	const handleSendMessage = () => {
-		if (conversationId) {
-			addDoc(collection(db, 'conversations', conversationId, 'messages'), {
-				sender: user.displayName,
-				content: message,
-				timestamp: serverTimestamp(),
-			})
+	const getSenderPhoto = async (sender) => {
+		if (!sender) return {}
+		if (images.has(sender)) return images.get(sender)
+		let photo
+		if (sender == user.uid) photo = { photoURL: user.photoURL, defaultColors: user.defaultColors }
+		else {
+			const doc = await getDoc(doc(db, 'users', sender))
+			photo = { photoURL, defaultColors } = doc.data()
 		}
+		images.set(sender, photo)
+		return photo
 	}
 
 	return (
-		<div className="chatroom">
-			<div className="header">
-				<button className="back-button">Back</button>
-				<button className="settings-button">Settings</button>
+		<div
+			ref={chatroomRef}
+			className={className + ' relative h-full max-h-full flex flex-col justify-between'}
+			{...props}
+		>
+			<header className='w-full bg-primary rounded-bl-2xl p-4'>
+				<h1>Sender</h1>
+			</header>
+			<div className='overflow-y-auto overflow-x-hidden flex-grow max-h-full'>
+				{messages &&
+					messages.map((message) => {
+						return (
+							<Message
+								key={message.id}
+								message={{
+									senderPhoto: images.get(message.sender) || null,
+									getSenderPhoto,
+									conversation: id,
+									...message,
+								}}
+							/>
+						)
+					})}
 			</div>
-			<div className="message-stream">
-				{loading && <p>Loading messages...</p>}
-				{messages.map((message) => (
-					<div className="message" key={message.id}>
-						<p className="sender">{message.sender}</p>
-						<p className="content">{message.content}</p>
-						<p className="timestamp">{message.timestamp}</p>
-					</div>
-				))}
-			</div>
-			<div className="message-input">
-				<input type="text" value={message} onChange={(e) => setMessage(e.target.value)} />
-				<button onClick={handleSendMessage}>Send</button>
-			</div>
+			<footer className='bottom-0 right-0 w-full rounded-tl-2xl bg-primary p-4'>
+				<ChatroomInput chatroomRef={chatroomRef} addMessage={addMessage} />
+			</footer>
 		</div>
 	)
 }
-
-export default Chatroom

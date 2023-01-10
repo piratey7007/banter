@@ -9,8 +9,18 @@ module.exports = {
 				secondary: '#24394A',
 				white: '#F0F0F0',
 				black: '#0F1215',
-				error: {},
-				success: {},
+				error: {
+					100: '#FEE2E2',
+					500: '#EF4444',
+				},
+				success: {
+					100: '#D1FAE5',
+					500: '#10B981',
+				},
+				pending: {
+					100: '#FEE2E2',
+					500: '#EF4444',
+				},
 			},
 		},
 	},
