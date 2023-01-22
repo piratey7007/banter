@@ -15,19 +15,13 @@ import {
 import { Dispatch, EffectCallback, SetStateAction, useContext, useEffect, useState } from 'react'
 import { AuthContext } from './Auth'
 import { db } from './firebaseInfo'
-
-interface Message {
-	id: string
-	sender: string
-	message: string
-	timestamp: Timestamp
-}
+import { MessageI } from '../components/Message'
 
 export default function useMessages(id: string) {
-	const [messages, setMessages]: [Message[], Dispatch<SetStateAction<Message[]>>] = useState<Message[]>([])
+	const [messages, setMessages]: [MessageI[], Dispatch<SetStateAction<MessageI[]>>] = useState<MessageI[]>([])
 	const { user } = useContext(AuthContext)
 
-	const getMessages = (add: number) => {
+	const getMessages: (add?: number) => void = async (add?: number) => {
 		add = add ?? 20
 		onSnapshot(
 			query(
@@ -36,19 +30,16 @@ export default function useMessages(id: string) {
 				limit(messages.length + add),
 			),
 			(snapshot) => {
-				const messages = snapshot.docs.map(
-					(doc) =>
-						({
-							id: doc.id,
-							...doc.data(),
-						} as Message),
-				)
+				const messages = snapshot.docs.map((doc) => ({
+					id: doc.id,
+					...doc.data(),
+				})) as MessageI[]
 				setMessages(messages)
 			},
 		)
 	}
 
-	const addMessage = async (message: Message) => {
+	const addMessage = async (message: MessageI) => {
 		try {
 			const date = new Date()
 			const dateMs = date.getTime() as unknown as PartialWithFieldValue<DocumentData>
@@ -60,7 +51,7 @@ export default function useMessages(id: string) {
 		}
 	}
 
-	useEffect(getMessages as EffectCallback, [])
+	useEffect(getMessages, [])
 
 	return [messages, getMessages, addMessage]
 }
