@@ -1,7 +1,7 @@
 import React, { Children, cloneElement, ComponentProps, isValidElement, ReactElement } from 'react'
 import Form from './Form'
-export default function Card({ children }: { children: ReactElement[] }) {
-	function iterate(children: ReactElement[]) {
+export default function Card({ children }: { children: JSX.Element[] }) {
+	function iterate(children: JSX.Element[]) {
 		return Children.map(children, (child) => {
 			const { type, props } = child
 			if (isValidElement(child)) {
@@ -22,7 +22,7 @@ export default function Card({ children }: { children: ReactElement[] }) {
 								'px-5 py-3 bg-primary-light rounded-2xl flex gap-2 justify-center items-center hover:brightness-[115%] transition-all duration-200',
 						} as React.Attributes)
 					}
-					if (type.name === 'Link')
+					if (type.displayName === 'Link')
 						return cloneElement(child, {
 							className:
 								'self-start pl-2 -mt-2 font-light text-[#42A4FF] no-underline hover:underline hover:brightness-[120%] transition-all duration-200',

@@ -1,4 +1,4 @@
-import { Children, cloneElement, KeyboardEvent, ReactElement } from 'react'
+import { Children, cloneElement, KeyboardEvent } from 'react'
 
 export default function Form({
 	children,
@@ -6,13 +6,12 @@ export default function Form({
 	className,
 	...props
 }: {
-	children: ReactElement[]
+	children: JSX.Element[]
 	className: string
 	onSubmit?: () => void
 }) {
-	function iterate(children: ReactElement[]): ReactElement[] {
-		return Children.map(children, (child: ReactElement) => {
-			console.log(child)
+	function iterate(children: JSX.Element[]): JSX.Element[] {
+		return Children.map(children, (child: JSX.Element) => {
 			if (child.props.className?.split(' ').includes('container'))
 				return cloneElement(child, { children: iterate(child.props.children) })
 			if (child.type == 'select')
