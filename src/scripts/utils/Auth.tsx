@@ -21,10 +21,23 @@ const users = collection(db, 'users')
 export interface User extends firebase.User {
 	uid: string
 	bio?: string
+	birthday?: string
+	defaultColors?: string[] | string | undefined
 	chats?: string[]
+	age?: number
 }
 
-type UserDetails = {}
+export interface UserDetails {}
+
+export interface UserInfo {
+	displayName?: string
+	email?: string
+	photoURL?: string
+	defaultColors?: string[] | string
+	birthday?: string
+	age?: number
+	bio?: string
+}
 
 interface IAuthContext {
 	user: User | null
@@ -40,7 +53,7 @@ interface IAuthContext {
 	googleSignUp: (email?: string, password?: string) => Promise<void>
 	googleSignIn: (email?: string, password?: string) => Promise<void>
 	removeUser: () => Promise<void>
-	updateUserDetails: (data: User) => Promise<void>
+	updateUserDetails: (data: UserInfo) => Promise<void>
 }
 
 export type Status = {
@@ -247,7 +260,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 				setError(err || 'There was a problem deleting your account. Try again later.')
 			}
 		},
-		async updateUserDetails(data: User) {
+		async updateUserDetails(data: UserInfo) {
 			try {
 				if (!auth.currentUser) throw new Error('No user signed in')
 				const userDoc = doc(db, 'users', auth.currentUser.uid)
