@@ -51,7 +51,7 @@ export default function useMessages(id: string) {
 		}
 	}
 
-	useEffect(getMessages, [])
+	useEffect(() => getMessages, [])
 
 	return [messages, getMessages, addMessage]
 }

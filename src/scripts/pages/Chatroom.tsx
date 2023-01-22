@@ -16,9 +16,7 @@ export default function Chatroom({ className, ...props }: { className?: string }
 	useEffect(() => {
 		;(async () => {
 			await getMessages()
-			setTimeout(() => {
-				chatroomRef.current?.scrollTo(0, chatroomRef.current.scrollHeight)
-			}, 2000)
+			chatroomRef.current?.scrollTo(0, chatroomRef.current.scrollHeight)
 		})()
 	}, [])
 
