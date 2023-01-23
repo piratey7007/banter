@@ -1,6 +1,0 @@
-check IIFE
-
-DONE
-DEC 25
-Fix the loading default photo color
-create blank ChatList/Header for loading

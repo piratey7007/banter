@@ -26,12 +26,12 @@ export default function App() {
 					<>
 						<Header className='' />
 						<div className='bottom-bar flex justify-between flex-grow flex-shrink'>
-							<ChatList className='w-1/3' />
+							<ChatList className='w-1/3 max-xl:w-5/12 max-lg:hidden' />
 							<Routes>
-								<Route path='/' element={<EmptyState className='w-2/3' />} />
-								<Route path='profile/:id' element={<Profile className='w-2/3' />} />
-								<Route path='chatroom/:id' element={<Chatroom className='w-2/3 h-full' />} />
-								<Route path='*' element={<NotFound className='w-2/3' />} />
+								<Route path='/' element={<EmptyState className='grow' />} />
+								<Route path='profile/:id' element={<Profile className='grow' />} />
+								<Route path='chatroom/:id' element={<Chatroom className='grow' />} />
+								<Route path='*' element={<NotFound className='grow' />} />
 							</Routes>
 						</div>
 					</>
