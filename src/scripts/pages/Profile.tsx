@@ -4,14 +4,14 @@ import MyProfile from '../components/MyProfile'
 import { AuthContext } from '../utils/Auth'
 
 export default function Profile({}: { className?: string }) {
-	const { id } = useParams()
-	const { user } = useContext(AuthContext)
+  const { id } = useParams()
+  const { user } = useContext(AuthContext)
 
-	if (user && id === user.uid) return <MyProfile />
+  if (user && id === user.uid) return <MyProfile />
 
-	return (
-		<div>
-			<h1>Profile</h1>
-		</div>
-	)
+  return (
+    <div>
+      <h1>Profile</h1>
+    </div>
+  )
 }

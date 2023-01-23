@@ -7,20 +7,20 @@ import { AuthProvider } from './utils/Auth'
 import { ToastProvider, ToastRoot } from './utils/Toast'
 
 const Providers = ({ children }: { children: React.ReactNode }) => {
-	return (
-		<BrowserRouter basename='banter'>
-			<AuthProvider>
-				<ToastProvider>
-					<ToastRoot />
-					{children}
-				</ToastProvider>
-			</AuthProvider>
-		</BrowserRouter>
-	)
+  return (
+    <BrowserRouter basename='banter'>
+      <AuthProvider>
+        <ToastProvider>
+          <ToastRoot />
+          {children}
+        </ToastProvider>
+      </AuthProvider>
+    </BrowserRouter>
+  )
 }
 
 ReactDOM.createRoot(document.getElementById('root') as Element).render(
-	<Providers>
-		<App />
-	</Providers>,
+  <Providers>
+    <App />
+  </Providers>,
 )

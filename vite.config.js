@@ -5,26 +5,26 @@ import autoprefixer from 'autoprefixer'
 import tailwindNesting from '@tailwindcss/nesting'
 
 export default defineConfig({
-	plugins: [react()],
-	css: {
-		postcss: {
-			plugins: [tailwindNesting, tailwind, autoprefixer],
-		},
-	},
-	base: '/banter',
-	optimizeDeps: {
-		exclude: [
-			'firebase',
-			'@firebase/app',
-			'@firebase/auth',
-			'@firebase/firestore',
-			'@firebase/analytics',
-			'firebase/app',
-			'firebase/auth',
-			'firebase/firestore',
-		],
-	},
-	server: {
-		port: 2200
-	}
+  plugins: [react()],
+  css: {
+    postcss: {
+      plugins: [tailwindNesting, tailwind, autoprefixer],
+    },
+  },
+  base: '/banter',
+  optimizeDeps: {
+    exclude: [
+      'firebase',
+      '@firebase/app',
+      '@firebase/auth',
+      '@firebase/firestore',
+      '@firebase/analytics',
+      'firebase/app',
+      'firebase/auth',
+      'firebase/firestore',
+    ],
+  },
+  server: {
+    port: 2200,
+  },
 })

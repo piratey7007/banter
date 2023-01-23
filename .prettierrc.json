@@ -1,7 +1,9 @@
 {
-    "singleQuote": true,
-    "trailingComma": "all",
-    "jsxSingleQuote": true,
-    "semi": false,
-    "bracketSameLine": true
+  "singleQuote": true,
+  "trailingComma": "all",
+  "jsxSingleQuote": true,
+  "semi": false,
+  "bracketSameLine": true,
+  "plugins": ["@prettier/plugin-xml"],
+  "xmlWhitespaceSensitivity": "ignore"
 }
