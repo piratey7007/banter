@@ -24,4 +24,7 @@ export default defineConfig({
 			'firebase/firestore',
 		],
 	},
+	server: {
+		port: 2200
+	}
 })
