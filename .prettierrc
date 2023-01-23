@@ -3,7 +3,6 @@
   "trailingComma": "all",
   "jsxSingleQuote": true,
   "semi": false,
-  "bracketSameLine": true,
   "plugins": ["@prettier/plugin-xml"],
   "xmlWhitespaceSensitivity": "ignore"
 }

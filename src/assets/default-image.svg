@@ -3,7 +3,8 @@
   height="100"
   viewBox="0 0 100 100"
   fill="none"
-  xmlns="http://www.w3.org/2000/svg">
+  xmlns="http://www.w3.org/2000/svg"
+>
   <rect width="100" height="100" rx="12" fill="black" />
   <ellipse cx="49.5" cy="27" rx="18.5" ry="18" fill="white" />
   <path

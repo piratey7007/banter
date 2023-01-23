@@ -51,7 +51,8 @@ export default function Message({
           // getTimestamp()
         }}
         className={classes + ' relative'}
-        {...props}>
+        {...props}
+      >
         <div className='photo'>
           <UserImage
             url={senderPhoto?.photoURL}
@@ -64,7 +65,8 @@ export default function Message({
         </div>
         <button
           onClick={handleDeleteMessage}
-          className='top-0 right-0 absolute'>
+          className='top-0 right-0 absolute'
+        >
           Delete Message
         </button>
       </div>

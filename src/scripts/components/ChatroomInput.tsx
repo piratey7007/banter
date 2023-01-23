@@ -36,7 +36,8 @@ export default function ChatroomInput({
         e.preventDefault()
         handleSend
       }}
-      action='send_message'>
+      action='send_message'
+    >
       <div
         className='py-3 px-4 flex flex-col flex-grow [overflow-wrap:break-word] bg-black rounded-2xl placeholder:text-white placeholder:opacity-60 focus-visible:outline-none hover:ring-2 focus-visible:ring-4 ring-white ring-opacity-20 transition-[box-shadow] duration-100'
         contentEditable='true'
@@ -47,7 +48,8 @@ export default function ChatroomInput({
             e.preventDefault()
             handleSend()
           }
-        }}></div>
+        }}
+      ></div>
       <button onClick={handleSend} type='submit'>
         Send
       </button>

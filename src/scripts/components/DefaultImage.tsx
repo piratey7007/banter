@@ -32,7 +32,8 @@ export default function DefaultImage({
       fill='none'
       xmlns='http://www.w3.org/2000/svg'
       className={className}
-      {...props}>
+      {...props}
+    >
       <rect width='100' height='100' rx='12' fill={primary} />
       <ellipse
         cx='49.5'
@@ -57,7 +58,8 @@ export default function DefaultImage({
             y1='14.5'
             x2='62'
             y2='40'
-            gradientUnits='userSpaceOnUse'>
+            gradientUnits='userSpaceOnUse'
+          >
             <stop stopColor={'#' + secondary} />
             <stop offset='1' stopColor={'#' + secondary2} stopOpacity='1' />
           </linearGradient>
@@ -67,7 +69,8 @@ export default function DefaultImage({
             y1='53.5'
             x2='66'
             y2='90'
-            gradientUnits='userSpaceOnUse'>
+            gradientUnits='userSpaceOnUse'
+          >
             <stop stopColor={'#' + secondary} />
             <stop offset='1' stopColor={'#' + secondary2} stopOpacity='1' />
           </linearGradient>

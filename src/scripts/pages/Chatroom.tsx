@@ -71,7 +71,8 @@ export default function Chatroom({
       className={
         className + ' relative h-full max-h-full flex flex-col justify-between'
       }
-      {...props}>
+      {...props}
+    >
       <header className='w-full bg-primary rounded-bl-2xl p-4'>
         <h1>Sender</h1>
       </header>

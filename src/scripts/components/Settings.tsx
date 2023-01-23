@@ -14,7 +14,8 @@ export default function Settings({
       xmlns='http://www.w3.org/2000/svg'
       className={'cursor-pointer ' + className}
       onClick={handleSettings}
-      {...props}>
+      {...props}
+    >
       <path
         fillRule='evenodd'
         clipRule='evenodd'

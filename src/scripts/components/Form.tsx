@@ -56,7 +56,8 @@ export default function Form({
       {...props}
       className={
         'flex flex-col justify-center items-center gap-4 ' + (className || '')
-      }>
+      }
+    >
       {newChildren}
     </form>
   )

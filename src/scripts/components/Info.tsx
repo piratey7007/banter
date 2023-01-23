@@ -47,7 +47,8 @@ export default function Info() {
               ref={colorsRef}
               className='w-40'
               name='colors'
-              id='default-colors'>
+              id='default-colors'
+            >
               <option value='red'>Red</option>
               <option value='blue'>Blue</option>
               <option value='green'>Green</option>
@@ -79,7 +80,8 @@ export default function Info() {
           <textarea
             ref={bioRef}
             id='bio'
-            placeholder='Tell us about yourself!'></textarea>
+            placeholder='Tell us about yourself!'
+          ></textarea>
         </div>
       </Form>
       <button onClick={handleSubmit}>Submit</button>
