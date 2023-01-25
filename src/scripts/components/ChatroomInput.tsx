@@ -6,6 +6,7 @@ import {
   useRef,
   useState,
 } from 'react'
+import useDelayed from '../utils/useDelayed'
 
 interface ChatroomProps {
   chatroomRef: RefObject<HTMLDivElement>
@@ -17,6 +18,7 @@ export default function ChatroomInput({
   addMessage,
 }: ChatroomProps) {
   const mainRef = useRef<HTMLDivElement>(null)
+  const [runDelayedFn] = useDelayed()
 
   const handleSend = async () => {
     if (mainRef.current?.innerText.trim() == '') return
@@ -29,6 +31,10 @@ export default function ChatroomInput({
     chatroomRef.current?.scrollTo(0, chatroomRef.current.scrollHeight)
     if (mainRef.current) mainRef.current.innerHTML = ''
     await addMessage(message)
+  }
+
+  const handleChange = () => {
+    console.log('changed')
   }
 
   return (
@@ -44,8 +50,9 @@ export default function ChatroomInput({
           if (e.key == 'Enter') {
             if (e.shiftKey) return
             e.preventDefault()
-            handleSend()
+            return handleSend()
           }
+          runDelayedFn(handleChange, 1000)
         }}
       >
         <Span type='' />
